@@ -1,0 +1,36 @@
+# Fly.io Deployment Configuration for Proof FastAPI Backend
+app = "proof-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  ENVIRONMENT = "production"
+  DEBUG = "False"
+  HOST = "0.0.0.0"
+  PORT = "8080"
+  APP_NAME = "Proof API"
+  HF_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+  HF_API_TIMEOUT_SECONDS = "15.0"
+  CORS_ORIGINS = '["https://frontend-ten-delta-61.vercel.app"]'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[health_checks]
+  [health_checks.default]
+    path = "/health"
+    interval = "30s"
+    timeout = "10s"
+    grace_period = "10s"

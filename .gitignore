@@ -1,0 +1,131 @@
+# Root .gitignore for Proof Visual Progress Tracker
+# Covers both frontend (Expo) and backend (FastAPI)
+
+# ==========================================
+# SECRETS & ENVIRONMENT - NEVER COMMIT
+# ==========================================
+.env
+.env.local
+.env.production
+.env.*.local
+.env.production.local
+
+# Allow template files (no real secrets)
+!.env.example
+!.env.production.template
+
+# ==========================================
+# BACKEND (FastAPI/Python)
+# ==========================================
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+.venv*/
+venv*/
+env*/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# FRONTEND (Expo/React Native)
+# ==========================================
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+# generated native folders
+/ios
+/android
+
+# Vercel
+.vercel
+
+# ==========================================
+# DEPLOYMENT CONFIGS (generated)
+# ==========================================
+# Render, Fly.io, Railway configs are OK to commit
+# but local overrides should be ignored
+render.yaml.local
+fly.toml.local
+railway.json.local
+
+# ==========================================
+# LOGS
+# ==========================================
+*.log
+logs/
+*.log.*
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ==========================================
+# BACKUP FILES
+# ==========================================
+*~
+*.bak
+*.backup
+*.orig

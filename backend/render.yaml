@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: proof-api
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1"
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "10000"
+      - key: APP_NAME
+        value: "Proof API"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: HF_TOKEN
+        sync: false
+      - key: HF_MODEL
+        value: "Qwen/Qwen3-4B-Instruct-2507"
+      - key: HF_API_TIMEOUT_SECONDS
+        value: "15.0"
+      - key: REVENUECAT_WEBHOOK_AUTH_HEADER
+        sync: false
+      - key: CORS_ORIGINS
+        value: '["https://frontend-ten-delta-61.vercel.app"]'
+      - key: AUTH_SECRET
+        generateValue: true
+    healthCheckPath: /health
+    autoDeploy: true
