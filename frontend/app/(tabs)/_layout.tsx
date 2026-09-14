@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs, useRouter, usePathname } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { FloatingNavBar, TabName } from '../../src/components';
+import { AuthGuard } from '../../src/components/AuthGuard';
 import { colors } from '../../src/theme';
 
 export default function TabsLayout() {
@@ -23,20 +24,22 @@ export default function TabsLayout() {
   };
 
   return (
-    <View style={styles.container}>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: { display: 'none' }, // Custom FloatingNavBar is rendered below
-        }}
-      >
-        <Tabs.Screen name="index" />
-        <Tabs.Screen name="time-travel" />
-        <Tabs.Screen name="stories" />
-        <Tabs.Screen name="profile" />
-      </Tabs>
-      <FloatingNavBar activeTab={getActiveTab()} onTabChange={handleTabChange} />
-    </View>
+    <AuthGuard>
+      <View style={styles.container}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: { display: 'none' },
+          }}
+        >
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="time-travel" />
+          <Tabs.Screen name="stories" />
+          <Tabs.Screen name="profile" />
+        </Tabs>
+        <FloatingNavBar activeTab={getActiveTab()} onTabChange={handleTabChange} />
+      </View>
+    </AuthGuard>
   );
 }
 

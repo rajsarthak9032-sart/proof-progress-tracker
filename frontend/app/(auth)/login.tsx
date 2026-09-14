@@ -24,30 +24,75 @@ export default function LoginScreen() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): { valid: boolean; message?: string } => {
+    if (password.length < 8) {
+      return { valid: false, message: 'Password must be at least 8 characters.' };
+    }
+    if (!/[A-Z]/.test(password)) {
+      return { valid: false, message: 'Password must contain at least one uppercase letter.' };
+    }
+    if (!/[a-z]/.test(password)) {
+      return { valid: false, message: 'Password must contain at least one lowercase letter.' };
+    }
+    if (!/[0-9]/.test(password)) {
+      return { valid: false, message: 'Password must contain at least one number.' };
+    }
+    return { valid: true };
+  };
+
   const handleSubmit = async () => {
-    if (!email.trim() || !password) {
+    const trimmedEmail = email.trim().toLowerCase();
+
+    if (!trimmedEmail || !password) {
       setError('Please enter both email and password.');
       return;
     }
+
+    if (!validateEmail(trimmedEmail)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (isSignUp) {
+      const pwdValidation = validatePassword(password);
+      if (!pwdValidation.valid) {
+        setError(pwdValidation.message ?? 'Invalid password.');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match.');
+        return;
+      }
+    }
+
     setError(null);
     setLoading(true);
 
     if (isSignUp) {
-      const res = await signUpWithEmail(email.trim(), password);
+      const res = await signUpWithEmail(trimmedEmail, password);
       setLoading(false);
       if (res.error) {
         setError(res.error);
-      } else {
-        router.replace('/(tabs)');
+      } else if (res.needsVerification) {
+        // Navigate to verification screen with email
+        router.replace(`/(auth)/verify-email?email=${encodeURIComponent(trimmedEmail)}` as any);
       }
     } else {
-      const res = await signInWithEmail(email.trim(), password);
+      const res = await signInWithEmail(trimmedEmail, password);
       setLoading(false);
       if (res.error) {
         setError(res.error);
+      } else if (res.needsVerification) {
+        router.replace(`/(auth)/verify-email?email=${encodeURIComponent(trimmedEmail)}` as any);
       } else {
         router.replace('/(tabs)');
       }
@@ -57,6 +102,10 @@ export default function LoginScreen() {
   const handleDemoMode = () => {
     setDemoMode(true);
     router.replace('/(tabs)');
+  };
+
+  const handleForgotPassword = () => {
+    router.push('/(auth)/forgot-password' as any);
   };
 
   return (
@@ -128,6 +177,20 @@ export default function LoginScreen() {
             />
           </View>
 
+          {isSignUp && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>CONFIRM PASSWORD</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="••••••••••••"
+                placeholderTextColor={colors.outlineVariant}
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
+          )}
+
           <Button
             title={isSignUp ? 'Create Account' : 'Sign In'}
             onPress={handleSubmit}
@@ -136,10 +199,20 @@ export default function LoginScreen() {
             style={styles.submitBtn}
           />
 
+          {!isSignUp && (
+            <TouchableOpacity
+              onPress={handleForgotPassword}
+              style={styles.forgotPassword}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             onPress={() => {
               setError(null);
               setIsSignUp(!isSignUp);
+              setConfirmPassword('');
             }}
             style={styles.switchModeRow}
           >
@@ -271,6 +344,15 @@ const styles = StyleSheet.create({
   submitBtn: {
     marginTop: 8,
     marginBottom: 16,
+  },
+  forgotPassword: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  forgotPasswordText: {
+    ...typography.bodySm,
+    color: colors.secondary,
+    fontWeight: '500',
   },
   switchModeRow: {
     alignItems: 'center',

@@ -1,6 +1,7 @@
 import { Journey, Evidence, AIInsights, ProofStory, SubscriptionLimits } from '../types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+const REQUEST_TIMEOUT = 30000; // 30 seconds
 
 class ApiService {
   private token: string | null = null;
@@ -19,17 +20,32 @@ class ApiService {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-    if (!res.ok) {
-      const errorBody = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(errorBody.detail || `Request failed with status ${res.status}`);
+    try {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        ...options,
+        headers,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const errorBody = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(errorBody.detail || `Request failed with status ${res.status}`);
+      }
+
+      return res.json();
+    } catch (err: any) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your connection and try again.');
+      }
+      throw err;
     }
-
-    return res.json();
   }
 
   // Health

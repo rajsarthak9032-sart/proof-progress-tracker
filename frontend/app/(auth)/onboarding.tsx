@@ -18,8 +18,7 @@ export default function OnboardingScreen() {
   const { setDemoMode } = useAuth();
 
   const handleStartJourney = () => {
-    router.replace('/(tabs)');
-    router.push('/journey/create');
+    router.replace('/(auth)/login');
   };
 
   const handleExploreDemo = () => {

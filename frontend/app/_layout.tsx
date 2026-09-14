@@ -22,6 +22,8 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)/onboarding" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)/login" options={{ headerShown: false, presentation: 'modal' }} />
+            <Stack.Screen name="(auth)/verify-email" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)/forgot-password" options={{ headerShown: false }} />
             <Stack.Screen name="journey/create" options={{ headerShown: false, presentation: 'modal' }} />
             <Stack.Screen name="journey/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="evidence/add" options={{ headerShown: false, presentation: 'modal' }} />
